@@ -1,10 +1,12 @@
 <script>
 import TeamItem from './TeamItem.vue'
+import BoardItem from './BoardItem.vue'
 
 export default {
 
     components: {
-        TeamItem
+        TeamItem,
+        BoardItem
     },
 
     props: {
@@ -29,13 +31,34 @@ export default {
                     name_:"hackathon-super-team"
                 }
             ],
-            currentTeamId: null,
+            
+            currentTeam: {
+                id: 2,
+                name_: "hackathon-super-team",
+                boards: [
+                    {
+                        id: 0,
+                        name_: "main board"
+                    }, 
+                    {
+                        id: 1,
+                        name_: "board-2"
+                    }
+                ],
+            },
         }
     },
 
     computed: {
         allMyTeams() {
             return [...this.teams].sort()
+        },
+
+        allTeamBoards() {
+            if (!this.currentTeam ){
+                return []
+            }
+            return [...this.currentTeam.boards].sort()
         }
     }
 
@@ -45,16 +68,23 @@ export default {
 
 
 <template><div class="teams-wrapper">
-    <div class="my-teams">
+    <div class="my-teams items-main-div">
         <label>my teams</label>
-        <div class="my-teams-content">
-            <TeamItem class="team-item"
+        <div class="my-teams-content content-wrapper">
+            <TeamItem class="team-item item-wrapper"
             v-for="team in allMyTeams"
             v-bind:team="team"
             />
         </div>
     </div>
-    <div class="team-decks">
+    <div class="team-decks items-main-div" v-if="currentTeam">
+        <label>{{currentTeam.name_}} boards</label>
+        <div class="boards-content content-wrapper">
+            <BoardItem class="board-item item-wrapper"
+            v-for="board in allTeamBoards"
+            v-bind:board="board"
+            />
+        </div>
     </div>
 </div></template>
 
@@ -65,18 +95,23 @@ export default {
     margin-left: 25px;
 }
 
-.my-teams label {
-    font-size: 15px;
+.items-main-div {
+    margin-top: 50px;
 }
 
-.my-teams-content {
+.items-main-div label {
+    font-size: 18px;
+}
+
+.content-wrapper{
     margin-top: 20px;
     margin-left: 10px;
 }
 
-.team-item {
+.item-wrapper {
     display: block;
     margin-bottom: 10px;
 }
+
 
 </style>
