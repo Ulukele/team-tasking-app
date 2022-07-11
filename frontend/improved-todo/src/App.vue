@@ -1,23 +1,46 @@
 <script>
 import TeamsBoards from "./components/TeamsBoards.vue"
+import SignInForm from "./components/SignInForm.vue"
+import SignUpForm from "./components/SignUpForm.vue"
 
 export default {
 
   components: {
-    TeamsBoards
-  },
+    TeamsBoards,
+    SignInForm,
+    SignUpForm,
+},
 
   data() {
     return {
       user: {
         id: 0
-      }
+      },
+      isSigninAction: false,
+      isSignupAction: false,
+      sessionKey: null
     }
   },
+
+  methods: {
+    initSignIn() { this.isSigninAction = true;},
+    initSignUp() { this.isSignupAction = true;},
+    initAppState() {
+      this.isSigninAction = false;
+      this.isSignupAction = false;
+    },
+
+    tryToPerformAuth(data) {
+      this.initAppState();
+      this.sessionKey = data.sessionKey;
+    }
+  }
 }
 </script>
 
 <template>
+<SignInForm v-if="isSigninAction" @submit="tryToPerformAuth"/>
+<SignUpForm v-else-if="isSignupAction" @submit="tryToPerformAuth"/>
 <header>
   <div class="logo header-item">
     <div class="logo-text"><label>planerus</label></div>
@@ -25,14 +48,15 @@ export default {
   <div class="header-item header-space"></div>
   <div class="auth header-item">
     <div class="auth-btns">
-      <button class="auth-button log-in">log-in</button>
-      <button class="auth-button sign-up">sign-up</button>
+      <button class="auth-button sign-in" @click="initSignIn">sign in</button>
+      <button class="auth-button sign-up" @click="initSignUp">sign up</button>
     </div>
   </div>
 </header>
 <div class="content">
   <div class="main-side left-side">
     <TeamsBoards
+      v-if="this.user"
       v-bind:user="this.user"
     />
   </div>
@@ -48,16 +72,18 @@ export default {
 <style>
 
 :root {
-  --black_color: #272834
+  --blue_color: #485AFD;
+  --black_color: #272834;
+  --gray_color: #f9f9f9;
 }
 
 @font-face {
-  font-family: Roboto;
-  src: url(/Roboto/Roboto-Regular.ttf);
+  font-family: JetBrains;
+  src: url(/JetBrainsMono/fonts/ttf/JetBrainsMono-Regular.ttf);
 }
 
 * {
-  font-family: Roboto;
+  font-family: JetBrains;
 }
 
 body {
@@ -70,7 +96,7 @@ body {
 
 header {
   display: flex;
-  height: 60px;
+  padding: 10px;
   background-color: var(--black_color);
 }
 
@@ -107,7 +133,7 @@ header {
 .auth-button {
   background: none;
   color: white;
-  font-size: 25px;
+  font-size: 20px;
   border-color: white;
   border-radius: 10px;
   border-style: solid;
@@ -118,12 +144,7 @@ header {
 .auth-button:hover {
   background: white;
   color: var(--black_color);
-  font-size: 25px;
   border-color: var(--black_color);
-  border-radius: 10px;
-  border-style: solid;
-  margin-left: 10px;
-  margin-right: 10px;
 }
 
 #app {
@@ -146,7 +167,7 @@ header {
 }
 
 .workspace {
-  background-color: #f9f9f9;
+  background-color: var(--gray_color);
   width: 60%;
 }
 
