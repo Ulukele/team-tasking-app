@@ -1,19 +1,38 @@
 <script>
+import { axios_utils } from '../axios_utils'
 
 export default {
     data() {
         return {
             username: null,
-            password: null
+            password: null,
+            error: null
         }
     },
 
     methods: {
-        tryToSignIn() {
-            
+
+        returnToApp(sessionID) {
             this.$emit('submit', {
-                sessionKey:0
+                sessionID: sessionID
             })
+        },
+
+        tryToSignIn() {
+            this.error = null
+
+            axios_utils.signIn(this.username, this.password).then(
+                result => {
+                    this.returnToApp(
+                        result.data.sessionID
+                    )
+                },
+                error => {
+                    this.error = "wrong username or password"
+                    console.log(error)
+                }
+            )
+            
         }
     }
 }
@@ -32,7 +51,11 @@ export default {
                 <label class="form-password form-item">Password</label>
                 <input class="form-item form-input" type="password" v-model="password">
 
+                <div class="buttons-container">
                 <button class="sub-btn form-item" @click="tryToSignIn()">Sign in</button>
+                <button class="cancel-btn form-item" @click="returnToApp(null)">Cancel</button>
+                </div>
+                <label v-if="this.error" class="form-error">{{error}}</label>
             </div>
             
         </div>
@@ -98,7 +121,6 @@ export default {
 .sub-btn:hover {
     color: var(--blue_color);
     background: white;
-    border-style: solid;
     border-color: var(--blue_color);
 }
 
@@ -107,6 +129,30 @@ export default {
     background-color: black;
     border-width: 1px;
     border-style: solid;
+}
+
+.form-error {
+    color: var(--red_color);
+    margin-bottom: 10px;
+    display: block;
+}
+
+.buttons-container {
+    display: flex;
+}
+
+.cancel-btn {
+    color: white;
+    background: var(--black_color);
+    border-style: solid;
+    border-width: 3px;
+    border-color: white;
+    margin-left: 10px;
+}
+
+.cancel-btn:hover {
+    color: var(--black_color);
+    background: white;
 }
 
 </style>

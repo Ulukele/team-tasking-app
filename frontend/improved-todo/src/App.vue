@@ -18,7 +18,7 @@ export default {
       },
       isSigninAction: false,
       isSignupAction: false,
-      sessionKey: null
+      sessionID: null
     }
   },
 
@@ -32,7 +32,8 @@ export default {
 
     tryToPerformAuth(data) {
       this.initAppState();
-      this.sessionKey = data.sessionKey;
+      this.sessionID = data.sessionID;
+      console.log(this.sessionID)
     }
   }
 }
@@ -75,6 +76,8 @@ export default {
   --blue_color: #485AFD;
   --black_color: #272834;
   --gray_color: #f9f9f9;
+  --red_color: #e13636;
+  --green_color: #2bb53e;
 }
 
 @font-face {
