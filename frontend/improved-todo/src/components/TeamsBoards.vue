@@ -1,4 +1,5 @@
 <script>
+import { axios_utils } from '../axios_utils'
 import TeamItem from './TeamItem.vue'
 import BoardItem from './BoardItem.vue'
 
@@ -17,35 +18,8 @@ export default {
     },
     data() {
         return {
-            teams: [
-                {
-                    id: 0,
-                    name_:"team-1"
-                },
-                {
-                    id: 1,
-                    name_:"team-2"
-                },
-                {
-                    id: 2,
-                    name_:"hackathon-super-team"
-                }
-            ],
-            
-            currentTeam: {
-                id: 2,
-                name_: "hackathon-super-team",
-                boards: [
-                    {
-                        id: 0,
-                        name_: "main board"
-                    }, 
-                    {
-                        id: 1,
-                        name_: "board-2"
-                    }
-                ],
-            },
+            teams: null,  
+            currentTeam: null,
         }
     },
 
@@ -70,7 +44,7 @@ export default {
 <template><div class="teams-wrapper">
     <div class="my-teams items-main-div">
         <label>my teams</label>
-        <div class="my-teams-content content-wrapper">
+        <div v-if="this.teams" class="my-teams-content content-wrapper">
             <TeamItem class="team-item item-wrapper"
             v-for="team in allMyTeams"
             v-bind:team="team"
@@ -79,7 +53,7 @@ export default {
     </div>
     <div class="team-decks items-main-div" v-if="currentTeam">
         <label>{{currentTeam.name_}} boards</label>
-        <div class="boards-content content-wrapper">
+        <div v-if="currentTeam" class="boards-content content-wrapper">
             <BoardItem class="board-item item-wrapper"
             v-for="board in allTeamBoards"
             v-bind:board="board"

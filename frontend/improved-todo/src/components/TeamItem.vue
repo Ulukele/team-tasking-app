@@ -17,7 +17,7 @@ export default {
 </script>
 
 <template>
-<button class="team-name-btn" @click="$emit('choosen', team)">{{team.name_}}</button>
+<button class="team-name-btn" @click="$emit('choosen', team)">{{team.name}}</button>
 </template>
 
 <style>

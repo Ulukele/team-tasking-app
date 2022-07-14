@@ -14,7 +14,8 @@ export default {
 
         returnToApp(sessionID) {
             this.$emit('submit', {
-                sessionID: sessionID
+                username: this.username,
+                sessionID: sessionID,
             })
         },
 

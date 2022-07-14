@@ -1,4 +1,5 @@
 <script>
+import { axios_utils } from './axios_utils'
 import TeamsBoards from "./components/TeamsBoards.vue"
 import SignInForm from "./components/SignInForm.vue"
 import SignUpForm from "./components/SignUpForm.vue"
@@ -13,18 +14,25 @@ export default {
 
   data() {
     return {
-      user: {
-        id: 0
-      },
+      user: null,
       isSigninAction: false,
       isSignupAction: false,
-      sessionID: null
+
+      username: null,
+      sessionID: null,
     }
   },
 
   methods: {
     initSignIn() { this.isSigninAction = true;},
     initSignUp() { this.isSignupAction = true;},
+    initSignOut() {
+      this.user = null
+      this.username = null,
+      this.sessionID = null
+      this.initAppState()
+    },
+
     initAppState() {
       this.isSigninAction = false;
       this.isSignupAction = false;
@@ -33,9 +41,21 @@ export default {
     tryToPerformAuth(data) {
       this.initAppState();
       this.sessionID = data.sessionID;
-      console.log(this.sessionID)
+      this.username = data.username;
+
+      axios_utils.getUser(this.username, this.sessionID).then(
+        result => {
+            this.user = result.data
+        },
+        error => {
+          console.log(error)
+        }
+      )
     }
+
   }
+
+
 }
 </script>
 
@@ -48,7 +68,11 @@ export default {
   </div>
   <div class="header-item header-space"></div>
   <div class="auth header-item">
-    <div class="auth-btns">
+    <div v-if="this.user">
+      <buttton class="username">{{user.username}}</buttton>
+      <button class="auth-button" @click="initSignOut">sign out</button>
+    </div>
+    <div v-else class="auth-btns">
       <button class="auth-button sign-in" @click="initSignIn">sign in</button>
       <button class="auth-button sign-up" @click="initSignUp">sign up</button>
     </div>
@@ -148,6 +172,12 @@ header {
   background: white;
   color: var(--black_color);
   border-color: var(--black_color);
+}
+.username {
+  color: var(--blue_color);
+  font-size: 25px;
+  margin-left: 10px;
+  margin-right: 10px;
 }
 
 #app {
