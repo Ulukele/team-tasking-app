@@ -3,6 +3,8 @@ import { axios_utils } from './axios_utils'
 import TeamsBoards from "./components/TeamsBoards.vue"
 import SignInForm from "./components/SignInForm.vue"
 import SignUpForm from "./components/SignUpForm.vue"
+import Participants from "./components/Participants.vue"
+import BoardWithTasks from "./components/BoardWithTasks.vue"
 
 export default {
 
@@ -10,6 +12,8 @@ export default {
     TeamsBoards,
     SignInForm,
     SignUpForm,
+    Participants,
+    BoardWithTasks,
 },
 
   data() {
@@ -18,8 +22,11 @@ export default {
       isSigninAction: false,
       isSignupAction: false,
 
-      username: null,
+      userId: null,
       sessionID: null,
+
+      participants: null,
+      board: null,
     }
   },
 
@@ -36,26 +43,40 @@ export default {
     initAppState() {
       this.isSigninAction = false;
       this.isSignupAction = false;
+      this.participants= null;
+      this.board = null;
     },
 
     tryToPerformAuth(data) {
+      if (data == null) {
+        this.initAppState()
+        return
+      }
       this.initAppState();
-      this.sessionID = data.sessionID;
-      this.username = data.username;
+      this.sessionID = data.jwt;
+      this.userId = data.id;
 
-      axios_utils.getUser(this.username, this.sessionID).then(
+      axios_utils.getUser(this.userId, this.sessionID).then(
         result => {
             this.user = result.data
+            this.user.sessionID = this.sessionID
         },
         error => {
           console.log(error)
         }
       )
+    },
+
+    fetchParticipants(participants) { this.participants = participants },
+    fetchBoard(board) { this.board = board }
+
+  },
+
+  computed: {
+    activeBoard() {
+      return this.board
     }
-
-  }
-
-
+  },
 }
 </script>
 
@@ -83,13 +104,22 @@ export default {
     <TeamsBoards
       v-if="this.user"
       v-bind:user="this.user"
+      @updParticipants="fetchParticipants"
+      @updBoard="fetchBoard"
     />
   </div>
   <div class="main-side workspace">
-
+    <BoardWithTasks
+      v-if="this.board"
+      v-bind:user="this.user"
+      v-bind:board="activeBoard"
+    />
   </div>
   <div class="main-side right-side">
-
+    <Participants 
+      v-if="this.participants"
+      v-bind:users="this.participants"
+    />
   </div>
 </div>
 </template>
@@ -98,10 +128,11 @@ export default {
 
 :root {
   --blue_color: #485AFD;
-  --black_color: #272834;
+  --black_color: #31333f;
   --gray_color: #f9f9f9;
   --red_color: #e13636;
   --green_color: #2bb53e;
+  --light_green_color: #84e691;
 }
 
 @font-face {
@@ -174,7 +205,7 @@ header {
   border-color: var(--black_color);
 }
 .username {
-  color: var(--blue_color);
+  color: var(--gray_color);
   font-size: 25px;
   margin-left: 10px;
   margin-right: 10px;

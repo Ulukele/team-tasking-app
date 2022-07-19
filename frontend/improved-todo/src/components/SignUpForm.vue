@@ -12,11 +12,8 @@ export default {
     },
     
     methods: {
-        returnToApp(sessionID) {
-            this.$emit('submit', {
-                username: this.username,
-                sessionID: sessionID,
-            })
+        returnToApp(data) {
+            this.$emit('submit', data)
         },
 
         tryToSignUp() {
@@ -27,8 +24,7 @@ export default {
             }
             axios_utils.signUp(this.username, this.password).then(
                 result => {
-                    let sessionID = result.data.sessionID
-                    this.returnToApp(sessionID)
+                    this.returnToApp(result.data)
                 },
                 error => {
                     this.error = "such user already registered"

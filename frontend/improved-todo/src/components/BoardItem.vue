@@ -15,15 +15,11 @@ export default {
 </script>
 
 <template>
-<button class="board-name-btn" @click="$emit('choosen', board)">{{board.name_}}</button>
+<div>
+    <button class="item-name-btn" @click="$emit('choosen', board)">{{board.name}}</button>
+    <button class="delete-item-btn" @click="$emit('tryToDelete', board)"> [x] </button>
+</div>
 </template>
 
 <style>
-
-.board-name-btn {
-    color: var(--black_color);
-    border: 0;
-    background: none;
-}
-
 </style>

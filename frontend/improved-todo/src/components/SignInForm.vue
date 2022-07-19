@@ -12,11 +12,8 @@ export default {
 
     methods: {
 
-        returnToApp(sessionID) {
-            this.$emit('submit', {
-                username: this.username,
-                sessionID: sessionID,
-            })
+        returnToApp(data) {
+            this.$emit('submit', data)
         },
 
         tryToSignIn() {
@@ -24,9 +21,7 @@ export default {
 
             axios_utils.signIn(this.username, this.password).then(
                 result => {
-                    this.returnToApp(
-                        result.data.sessionID
-                    )
+                    this.returnToApp(result.data)
                 },
                 error => {
                     this.error = "wrong username or password"
