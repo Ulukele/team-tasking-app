@@ -1,12 +1,14 @@
 <script>
 import { axios_utils } from '../axios_utils'
 import TaskItem from './TaskItem.vue'
+import NewTaskItem from './NewTaskItem.vue'
 
 export default {
 
     components: {
-        TaskItem
-    },
+    TaskItem,
+    NewTaskItem
+},
 
     props: {
         board: {
@@ -32,7 +34,7 @@ export default {
                 result => {
                     this.team = result.data
                 },
-                error => {console.log(error)}
+                error => {console.error(error)}
             )
         },
         fetchTasks() {
@@ -40,9 +42,21 @@ export default {
                 result => {
                     this.tasks = result.data
                 },
-                error => {console.log(error)}
+                error => {console.error(error)}
             )
         },
+        createNewTask(task) {
+            axios_utils.createTask(this.user, this.board.teamId, this.board.id, task).then(
+                result => { this.fetchTasks() },
+                error => {console.error(error)}
+            )
+        },
+        tryToDeleteTask(task) {
+            axios_utils.deleteTask(this.user, this.board.teamId, this.board.id, task.id).then(
+                result => { this.fetchTasks() },
+                error => {console.error(error)}
+            )
+        }
     },
 
     mounted() {
@@ -68,11 +82,18 @@ export default {
     <div class="workspace-path" v-if="team">
         {{this.team.name + ' / ' + this.board.name}}
     </div>
-    <TaskItem
-        v-if="this.tasks"
-        v-for="task in allMyTasks"
-        v-bind:task="task"
-        v-bind:user="this.user"
+    <div class="tasks-container">
+        <TaskItem
+            v-if="this.tasks"
+            v-for="task in allMyTasks"
+            v-bind:task="task"
+            v-bind:user="this.user"
+            @tryToDelete="tryToDeleteTask"
+        />
+    </div>
+    
+    <NewTaskItem
+        @createNew="createNewTask"
     />
 
 </div></template>
@@ -85,6 +106,10 @@ export default {
     background: white;
     padding: 7px;
     border-radius: 10px;
+}
+
+.tasks-container {
+    width: 100%;
 }
 
 

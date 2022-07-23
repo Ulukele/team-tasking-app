@@ -14,7 +14,7 @@ export default {
     SignUpForm,
     Participants,
     BoardWithTasks,
-},
+  },
 
   data() {
     return {
@@ -56,6 +56,9 @@ export default {
       this.sessionID = data.jwt;
       this.userId = data.id;
 
+      localStorage.jwt = data.jwt;
+      localStorage.id = data.id;
+      
       axios_utils.getUser(this.userId, this.sessionID).then(
         result => {
             this.user = result.data
@@ -70,6 +73,12 @@ export default {
     fetchParticipants(participants) { this.participants = participants },
     fetchBoard(board) { this.board = board }
 
+  },
+
+  mounted() {
+    if (localStorage.jwt && localStorage.id) {
+      this.tryToPerformAuth({jwt: localStorage.jwt, id: localStorage.id})
+    }
   },
 
   computed: {

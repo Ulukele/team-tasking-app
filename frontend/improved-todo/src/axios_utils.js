@@ -1,4 +1,5 @@
-const API_BASE_URL = _API_BASE_URL
+// const API_BASE_URL = "_API_BASE_URL"
+const API_BASE_URL = "http://localhost:8080/api/v1/"
 const API_A_BASE_URL = API_BASE_URL + "auth/"
 const API_C_BASE_URL = API_BASE_URL + "content/"
 
@@ -41,20 +42,20 @@ export const axios_utils = {
     },
 
     getTeams(user) {
-        return axios.get(API_C_BASE_URL + 'user/' + user.id + '/team/', defaultConfig(user.sessionID))
+        return axios.get(API_C_BASE_URL + 'team/', defaultConfig(user.sessionID))
     },
     getBoards(user, team) {
-        let url = API_C_BASE_URL + 'user/' + user.id + '/team/' + team.id + '/board/'
+        let url = API_C_BASE_URL + 'team/' + team.id + '/board/'
         return axios.get(url, defaultConfig(user.sessionID))
     },
     getTeam(user, teamId) {
-        let url = API_C_BASE_URL + 'user/' + user.id + '/team/' + teamId + '/'
+        let url = API_C_BASE_URL + 'team/' + teamId + '/'
         return axios.get(url, defaultConfig(user.sessionID))
     },
     createTeam(user, teamName, teamPass) {
         return axios({
             method: 'post',
-            url: API_C_BASE_URL + 'user/' + user.id + '/team/',
+            url: API_C_BASE_URL + 'team/',
             data: {name: teamName, password: teamPass},
             headers: defaultHeaders(user.sessionID)
         })
@@ -62,7 +63,7 @@ export const axios_utils = {
     joinTeam(user, teamId, teamPass) {
         return axios({
             method: 'post',
-            url: API_C_BASE_URL + 'user/' + user.id + '/team/' + teamId + '/join/',
+            url: API_C_BASE_URL + 'team/' + teamId + '/join/',
             data: {password: teamPass},
             headers: defaultHeaders(user.sessionID)
         })
@@ -70,42 +71,57 @@ export const axios_utils = {
     leaveTeam(user, teamId) {
         return axios({
             method: 'post',
-            url: API_C_BASE_URL + 'user/' + user.id + '/team/' + teamId + '/leave/',
+            url: API_C_BASE_URL + 'team/' + teamId + '/leave/',
             headers: defaultHeaders(user.sessionID)
         })
     },
     deleteTeam(user, teamId) {
         return axios({
             method: 'delete',
-            url: API_C_BASE_URL + 'user/' + user.id + '/team/' + teamId + '/',
+            url: API_C_BASE_URL + 'team/' + teamId + '/',
             headers: defaultHeaders(user.sessionID)
         })
     },
     deleteBoard(user, teamId, boardId) {
         return axios({
             method: 'delete',
-            url: API_C_BASE_URL + 'user/' + user.id + '/team/' + teamId + '/board/' +  boardId + '/',
+            url: API_C_BASE_URL + 'team/' + teamId + '/board/' +  boardId + '/',
             headers: defaultHeaders(user.sessionID)
         })
     },
     getBoard(user, teamId, boardId) {
-        let url = API_C_BASE_URL + 'user/' + user.id + '/team/' + teamId + '/board/' + boardId + '/'
+        let url = API_C_BASE_URL + 'team/' + teamId + '/board/' + boardId + '/'
         return axios.get(url, defaultConfig(user.sessionID))
     },
     createBoard(user, teamId, boardName) {
         return axios({
             method: 'post',
-            url: API_C_BASE_URL + 'user/' + user.id + '/team/' + teamId + '/board/',
+            url: API_C_BASE_URL + 'team/' + teamId + '/board/',
             data: {name: boardName},
             headers: defaultHeaders(user.sessionID)
         })
     },
     getTasks(user, teamId, boardId) {
-        let url = API_C_BASE_URL + 'user/' + user.id + '/team/' + teamId + '/board/' + boardId + '/task/'
+        let url = API_C_BASE_URL + 'team/' + teamId + '/board/' + boardId + '/task/'
         return axios.get(url, defaultConfig(user.sessionID))
     },
     getTask(user, teamId, boardId, taskId) {
-        let url = API_C_BASE_URL + 'user/' + user.id + '/team/' + teamId + '/board/' + boardId + '/task/' + taskId + '/'
+        let url = API_C_BASE_URL + 'team/' + teamId + '/board/' + boardId + '/task/' + taskId + '/'
         return axios.get(url, defaultConfig(user.sessionID))
+    },
+    createTask(user, teamId, boardId, task) {
+        return axios({
+            method: 'post',
+            url: API_C_BASE_URL + 'team/' + teamId + '/board/' + boardId + '/task/',
+            data: task,
+            headers: defaultHeaders(user.sessionID)
+        })
+    },
+    deleteTask(user, teamId, boardId, taskId) {
+        return axios({
+            method: 'delete',
+            url: API_C_BASE_URL + 'team/' + teamId + '/board/' + boardId + '/task/' + taskId + '/',
+            headers: defaultHeaders(user.sessionID)
+        })
     },
 }
