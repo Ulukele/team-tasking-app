@@ -30,9 +30,16 @@ export default {
 
     methods: {
         fetchTeam() {
+            this.userIdToUsername = {}
             axios_utils.getTeam(this.user, this.board.teamId).then(
                 result => {
-                    this.team = result.data
+                    this.team = {...result.data}
+                    this.team.users.forEach(element => {
+                        axios_utils.getUser(element.id, this.user.sessionID).then(
+                            res => {element.username = res.data.username}
+                        )
+                    })
+
                 },
                 error => {console.error(error)}
             )
@@ -40,7 +47,7 @@ export default {
         fetchTasks() {
             axios_utils.getTasks(this.user, this.board.teamId, this.board.id).then(
                 result => {
-                    this.tasks = result.data
+                    this.tasks = [...result.data]
                 },
                 error => {console.error(error)}
             )
@@ -71,7 +78,9 @@ export default {
     },
     computed: {
         allMyTasks() {
-            return [...this.tasks].sort()
+            return [...this.tasks].sort(function(item1, item2) {
+                return item2.importance - item1.importance
+            })
         },
     },
 }
@@ -109,6 +118,8 @@ export default {
 }
 
 .tasks-container {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
     width: 100%;
 }
 

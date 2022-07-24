@@ -1,5 +1,4 @@
-// const API_BASE_URL = "_API_BASE_URL"
-const API_BASE_URL = "http://localhost:8080/api/v1/"
+const API_BASE_URL = "_API_BASE_URL"
 const API_A_BASE_URL = API_BASE_URL + "auth/"
 const API_C_BASE_URL = API_BASE_URL + "content/"
 

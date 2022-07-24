@@ -10,7 +10,7 @@ export default {
 </script>
 
 <template>
-<div class="participant-item"> id: {{user.id}} {{ (user.isOwner ? '(owner)' : '') }} </div>
+<div class="participant-item">{{user.username}} [{{user.id}}] {{ (user.isOwner ? '(owner)' : '') }} </div>
 </template>
 
 <style>

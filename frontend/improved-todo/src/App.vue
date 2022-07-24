@@ -5,6 +5,7 @@ import SignInForm from "./components/SignInForm.vue"
 import SignUpForm from "./components/SignUpForm.vue"
 import Participants from "./components/Participants.vue"
 import BoardWithTasks from "./components/BoardWithTasks.vue"
+import { VueElement } from 'vue'
 
 export default {
 
@@ -47,6 +48,17 @@ export default {
       this.board = null;
     },
 
+    tryToShowLastBoard() {
+      var boardId = sessionStorage.getItem("context-board-id")
+      var teamId = sessionStorage.getItem("context-team-id")
+      if (boardId && teamId) {
+        axios_utils.getBoard(this.user, teamId, boardId).then(
+          result => {this.board = result.data},
+          error => {console.error(error)}
+        )
+      }
+    },
+
     tryToPerformAuth(data) {
       if (data == null) {
         this.initAppState()
@@ -56,13 +68,15 @@ export default {
       this.sessionID = data.jwt;
       this.userId = data.id;
 
-      localStorage.jwt = data.jwt;
-      localStorage.id = data.id;
+      sessionStorage.setItem("jwt", data.jwt)
+      sessionStorage.setItem("id", data.id)
       
       axios_utils.getUser(this.userId, this.sessionID).then(
         result => {
             this.user = result.data
             this.user.sessionID = this.sessionID
+
+            this.tryToShowLastBoard()
         },
         error => {
           console.log(error)
@@ -70,14 +84,32 @@ export default {
       )
     },
 
-    fetchParticipants(participants) { this.participants = participants },
-    fetchBoard(board) { this.board = board }
+    fetchParticipants(participants) {
+      this.participants = []
+      participants.forEach(element => {
+        axios_utils.getUser(element.id, this.sessionID).then(
+          res => {element.username = res.data.username; this.participants.push({...element})}
+        )
+      })
+    },
+    fetchBoard(board) {
+      if (!board) {
+        this.board = null
+        sessionStorage.removeItem("context-board-id")
+        return
+      }
+      this.board = board
+      sessionStorage.setItem("context-board-id", board.id)
+      sessionStorage.setItem("context-team-id", board.teamId)
+    }
 
   },
 
   mounted() {
-    if (localStorage.jwt && localStorage.id) {
-      this.tryToPerformAuth({jwt: localStorage.jwt, id: localStorage.id})
+    var jwt = sessionStorage.getItem("jwt")
+    var id = sessionStorage.getItem("id")
+    if (jwt && id) {
+      this.tryToPerformAuth({jwt: jwt, id: id})
     }
   },
 
@@ -108,7 +140,7 @@ export default {
     </div>
   </div>
 </header>
-<div class="content">
+<div v-if="this.user" class="content">
   <div class="main-side left-side">
     <TeamsBoards
       v-if="this.user"
@@ -131,6 +163,11 @@ export default {
     />
   </div>
 </div>
+<div v-else class="adv-message">
+  <label>planerus - collaborative task management</label>
+  <label>sign-in and continue work</label>
+  <label>sign-up and try it up</label>
+</div>
 </template>
 
 <style>
@@ -138,7 +175,7 @@ export default {
 :root {
   --blue_color: #485AFD;
   --black_color: #31333f;
-  --gray_color: #f9f9f9;
+  --gray_color: #e3dfdf;
   --red_color: #e13636;
   --green_color: #2bb53e;
   --light_green_color: #84e691;
@@ -156,7 +193,7 @@ export default {
 body {
   margin: 0;
   padding: 0;
-  overflow: hidden;
+  overflow-x: hidden;
   width: 100vw;
   height: 100vh;
 }
@@ -230,7 +267,7 @@ header {
 
 .main-side {
   display: inline-block;
-  height: 100%;
+  min-height: 100%;
   vertical-align: top;
 }
 
@@ -247,6 +284,18 @@ header {
 .right-side {
   background-color: white;
   width: 20%;
+}
+
+.adv-message {
+  margin-top: 10%;
+  display:grid;
+}
+.adv-message label {
+  background: var(--black_color);
+  color: white;
+  width: fit-content;
+  margin-top: 10px;
+  font-size: 30px;
 }
 
 

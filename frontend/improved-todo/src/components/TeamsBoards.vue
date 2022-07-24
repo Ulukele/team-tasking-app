@@ -52,14 +52,20 @@ export default {
 
     methods: {
         fetchTeams() {
+            this.teams = []
             axios_utils.getTeams(this.user).then(
                 result => {
                     this.teams = result.data
+                    this.fetchBoards()
                 },
                 error => {console.log(error)}
             )
         },
         fetchBoards() {
+            this.boards = []
+            if (!this.currentTeam) {
+                return
+            }
             axios_utils.getBoards(this.user, this.currentTeam).then(
                 result => {
                     this.boards = result.data
@@ -122,15 +128,23 @@ export default {
         },
         tryToDeleteTeam(team) {
             if (this.user.id === team.ownerId) {
+                if (this.currentTeam && team.id == this.currentTeam.id) {
+                    this.currentTeam = null
+                    this.$emit('updBoard', null)
+                }
                 axios_utils.deleteTeam(this.user, team.id).then(this.fetchTeams)
             } else {
                 axios_utils.leaveTeam(this.user, team.id).then(this.fetchTeams)
             }
         },
         tryToDeleteBoard(board) {
+            if (this.currentBoard && board.id == this.currentBoard.id) {
+                this.$emit('updBoard', null)
+            }
             axios_utils.deleteBoard(this.user, board.teamId, board.id).then(this.fetchBoards)
         },
         tryToChooseBoard(board) {
+            this.currentBoard = board
             this.$emit('updBoard', board)
         }
     }
