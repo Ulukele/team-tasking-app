@@ -25,6 +25,7 @@ export default {
 
       userId: null,
       sessionID: null,
+      refreshToken: null,
 
       participants: null,
       board: null,
@@ -59,15 +60,37 @@ export default {
       }
     },
 
+    tryToRefreshToken() {
+      console.log('try to refresh')
+        if (!this.refreshToken) {
+          return
+        }
+      console.log('refresh')
+        axios_utils.refreshToken(this.refreshToken).then(
+          result => {
+            this.refreshToken = result.data.refreshToken;
+            this.sessionID = result.data.jwt;
+            this.userId = result.data.id;
+            sessionStorage.setItem("refreshToken", result.data.refreshToken)
+            sessionStorage.setItem("jwt", result.data.jwt)
+            sessionStorage.setItem("id", result.data.id)
+            if (this.user) this.user.sessionID = this.sessionID
+          },
+          error => { console.error(error) }
+        )
+    },
+
     tryToPerformAuth(data) {
       if (data == null) {
         this.initAppState()
         return
       }
       this.initAppState();
+      this.refreshToken = data.refreshToken;
       this.sessionID = data.jwt;
       this.userId = data.id;
 
+      sessionStorage.setItem("refreshToken", data.refreshToken)
       sessionStorage.setItem("jwt", data.jwt)
       sessionStorage.setItem("id", data.id)
       
@@ -106,12 +129,24 @@ export default {
   },
 
   mounted() {
+		this.intervalId = setInterval(this.tryToRefreshToken, 3000 * 60);
     var jwt = sessionStorage.getItem("jwt")
     var id = sessionStorage.getItem("id")
+    var refreshToken = sessionStorage.getItem("refreshToken")
+
+    if (refreshToken) {
+      this.refreshToken = refreshToken
+      this.tryToRefreshToken()
+    }
+            
     if (jwt && id) {
       this.tryToPerformAuth({jwt: jwt, id: id})
     }
   },
+
+  beforeDestroy() {
+		clearInterval(this.intervalId);
+	},
 
   computed: {
     activeBoard() {

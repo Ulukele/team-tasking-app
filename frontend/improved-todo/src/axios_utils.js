@@ -14,6 +14,17 @@ function defaultConfig(sessionID) {
 }
 
 export const axios_utils = {
+
+    refreshToken(refreshToken) {
+        return axios({
+            method: 'post',
+            url: API_A_BASE_URL + 'refresh/',
+            data: {
+                refreshToken: refreshToken,
+            }
+        })
+    },
+
     signIn(userName, password) {
         return axios({
             method: 'post',
@@ -120,6 +131,14 @@ export const axios_utils = {
         return axios({
             method: 'delete',
             url: API_C_BASE_URL + 'team/' + teamId + '/board/' + boardId + '/task/' + taskId + '/',
+            headers: defaultHeaders(user.sessionID)
+        })
+    },
+    markTask(user, teamId, boardId, taskId, solved) {
+        return axios({
+            method: 'post',
+            url: API_C_BASE_URL + 'team/' + teamId + '/board/' + boardId + '/task/' + taskId + '/mark/',
+            data: {solved: solved},
             headers: defaultHeaders(user.sessionID)
         })
     },

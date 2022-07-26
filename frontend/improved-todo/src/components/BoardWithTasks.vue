@@ -63,6 +63,12 @@ export default {
                 result => { this.fetchTasks() },
                 error => {console.error(error)}
             )
+        },
+        tryToMarkTask(task) {
+            axios_utils.markTask(this.user, this.board.teamId, this.board.id, task.id, task.solved).then(
+                result => { this.fetchTasks() },
+                error => {console.error(error)}
+            )
         }
     },
 
@@ -98,6 +104,7 @@ export default {
             v-bind:task="task"
             v-bind:user="this.user"
             @tryToDelete="tryToDeleteTask"
+            @tryToMark="tryToMarkTask"
         />
     </div>
     

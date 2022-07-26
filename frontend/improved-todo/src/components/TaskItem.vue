@@ -1,4 +1,6 @@
 <script>
+import { axios_utils } from '../axios_utils';
+
 const percentColors = [
     { pct: 0.0, color: { r: 0x96, g: 0xe0, b: 0x72 } },
     { pct: 1.0, color: { r: 0xfb, g: 0x63, b: 0x76 } }
@@ -38,12 +40,26 @@ export default {
 
     data() {
         return {
+            solved: false
         }
+    },
+
+    beforeMount() {
+        this.solved = this.task.solved
     },
 
     computed: {
         taskColor() {
             return getColorForPercentage(this.task.importance / 100)
+        }
+    },
+
+    watch: {
+        solved: function(newVal, oldVal) {
+            this.$emit('tryToMark', {
+                id: this.task.id,
+                solved: newVal
+            })
         }
     }
 }
@@ -56,7 +72,7 @@ export default {
     </div>
     <div class="task-cont-2">
         <div class="task-item">
-            <input type="checkbox">
+            <input type="checkbox" v-model="solved">
             <div class="task-title">{{task.title}}</div>
         </div>
         <div class="task-actions">

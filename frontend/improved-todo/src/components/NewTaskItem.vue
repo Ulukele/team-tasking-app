@@ -21,11 +21,6 @@ export default {
             this.clearForm()
         },
         submitCreation() {
-            console.log({
-                title: this.newTaskTitle,
-                importance: parseInt(this.newTaskImportance, 10),
-                workerId: this.newTaskWorker,
-            })
             this.$emit('createNew', {
                 title: this.newTaskTitle,
                 importance: parseInt(this.newTaskImportance, 10),
