@@ -44,7 +44,11 @@ export default {
         }
     },
 
-    beforeMount() {
+    mounted() {
+        this.solved = this.task.solved
+    },
+
+    updated() {
         this.solved = this.task.solved
     },
 
@@ -56,6 +60,9 @@ export default {
 
     watch: {
         solved: function(newVal, oldVal) {
+            if (newVal == this.task.solved) {
+                return
+            }
             this.$emit('tryToMark', {
                 id: this.task.id,
                 solved: newVal
